@@ -4,55 +4,71 @@ services:
 
   frontend:
 
-    container_name: frontend 
+    container_name: frontend
 
     build:
       context: ./frontend
-
-    # image: frontend
 
     ports:
       - "5173:5173"
 
     networks:
       - fullstack
-    
+
     depends_on:
       - backend
 
-
+  
   backend:
 
-    container_name: backend 
+    container_name: backend
 
     build:
       context: ./backend
 
-    # image: backend 
-
     ports:
       - "8000:8000"
 
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+
+    networks:
+      - fullstack
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  db:
+
+    container_name: postgres_db
+
+    image: postgres:15
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 30s
+      retries: 5
     volumes:
-      - backend_db_volume:/app/db
+      - postgres_data:/var/lib/postgresql/data
 
     networks:
       - fullstack
 
 volumes:
-
-  backend_db_volume:
-
-    # name: backend_db_volume
-
-    # driver: local
+  postgres_data:
 
 networks:
-
   fullstack:
-
-    # name: fullstack
-
-    # driver: bridge 
-
-    

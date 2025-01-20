@@ -2,6 +2,10 @@
 
 from pathlib import Path
 from datetime import timedelta
+
+import os
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,10 +87,21 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# Get environment variables
+DATABASE_NAME = os.getenv('DATABASE_NAME', 'postgres')  # the postgres is the default . If it dont find the env variable , it will use that as default
+DATABASE_USER = os.getenv('DATABASE_USER', 'postgres')
+DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD', 'postgres')
+DATABASE_HOST = os.getenv('DATABASE_HOST', 'localhost')  # Use 'db' for the Docker service name
+DATABASE_PORT = os.getenv('DATABASE_PORT', '5432')
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db' / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,  # Docker service name 'db' for the database container
+        'PORT': DATABASE_PORT,  # Default PostgreSQL port
     }
 }
 
