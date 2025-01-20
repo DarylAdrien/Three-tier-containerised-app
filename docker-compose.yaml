@@ -1,0 +1,58 @@
+version: "3"
+
+services:
+
+  frontend:
+
+    container_name: frontend 
+
+    build:
+      context: ./frontend
+
+    # image: frontend
+
+    ports:
+      - "5173:5173"
+
+    networks:
+      - fullstack
+    
+    depends_on:
+      - backend
+
+
+  backend:
+
+    container_name: backend 
+
+    build:
+      context: ./backend
+
+    # image: backend 
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - backend_db_volume:/app/db
+
+    networks:
+      - fullstack
+
+volumes:
+
+  backend_db_volume:
+
+    # name: backend_db_volume
+
+    # driver: local
+
+networks:
+
+  fullstack:
+
+    # name: fullstack
+
+    # driver: bridge 
+
+    
